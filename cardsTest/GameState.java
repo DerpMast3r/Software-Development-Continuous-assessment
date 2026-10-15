@@ -1,12 +1,12 @@
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameState {
-    private final AtomicBoolean gameOver = new AtomicBoolean(false);
+
+    // Zero will mean that the game is still running
     private final AtomicInteger winner = new AtomicInteger(0);
 
     public boolean isGameOver() {
-        return gameOver.get();
+        return winner.get() != 0;
     }
 
     public int getWinner() {
@@ -14,10 +14,13 @@ public class GameState {
     }
 
     public boolean declareWinner(int playerId) {
-        if (gameOver.compareAndSet(false, true)) {
-            winner.set(playerId);
-            return true;
+        if (playerId <= 0) {
+            throw new IllegalArgumentException(
+                "The Player ID has to be positive"
+            );
         }
-        return false;
+
+        // Only a singular thread will change the winner from 0 to player ID
+        return winner.compareAndSet(0, playerId);
     }
 }
