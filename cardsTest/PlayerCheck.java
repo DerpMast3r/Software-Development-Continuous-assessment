@@ -14,7 +14,7 @@ public class PlayerCheck {
 
         Player player1 = new Player(1, startingHand);
 
-        System.out.println("Player ID: " + player1.getId());
+        System.out.println("Player ID: " + player1.getPlayerId());
         System.out.println(
             "The preferred value: " + player1.getPreferredValue()
         );
@@ -34,7 +34,7 @@ public class PlayerCheck {
         );
 
         // Discarding the non-preferred card
-        Card discarded = player1.discardNonPreferred();
+        Card discarded = player1.discardedNonPreferred();
 
         System.out.println("Discarded: " + discarded);
         System.out.println(
