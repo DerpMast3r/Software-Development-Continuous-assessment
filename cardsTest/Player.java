@@ -18,14 +18,12 @@ public class Player extends Thread {
     public Player(int id, List<Card> initialHand) {
         if (id <= 0) {
             throw new IllegalArgumentException(
-                    "The Player ID has to be positive"
-            );
+                    "The Player ID has to be positive");
         }
 
         if (initialHand == null || initialHand.size() != 4) {
             throw new IllegalArgumentException(
-                    "A player must start with exactly four cards"
-            );
+                    "A player must start with exactly four cards");
         }
 
         this.id = id;
@@ -43,8 +41,7 @@ public class Player extends Thread {
             List<CardDeck> decks, GameState state) {
         if (id <= 0) {
             throw new IllegalArgumentException(
-                    "The ID of the Player must be positive"
-            );
+                    "The ID of the Player must be positive");
         }
 
         if (numberOfPlayers <= 0
@@ -52,8 +49,7 @@ public class Player extends Thread {
                 || decks.size() != numberOfPlayers
                 || state == null) {
             throw new IllegalArgumentException(
-                    "The game setup is invalid"
-            );
+                    "The game setup is invalid");
         }
 
         this.id = id;
@@ -80,8 +76,7 @@ public class Player extends Thread {
     public synchronized void receiveCard(Card card) {
         if (card == null) {
             throw new IllegalArgumentException(
-                    "The card cannot be null"
-            );
+                    "The card cannot be null");
         }
 
         hand.add(card);
@@ -116,8 +111,7 @@ public class Player extends Thread {
         }
 
         throw new IllegalStateException(
-                "No card that is non-preferred is available to discard"
-        );
+                "No card that is non-preferred is available to discard");
     }
 
     private synchronized String handAsString() {
@@ -143,12 +137,10 @@ public class Player extends Thread {
 
         String fileName = "player" + id + "_output.txt";
 
-        try (PrintWriter output
-                = new PrintWriter(new FileWriter(fileName))) {
+        try (PrintWriter output = new PrintWriter(new FileWriter(fileName))) {
 
             output.println(
-                    "player " + id + " initial hand " + handAsString()
-            );
+                    "player " + id + " initial hand " + handAsString());
 
             // For winner found before the threads start
             if (state.isGameOver()) {
@@ -160,51 +152,57 @@ public class Player extends Thread {
 
             while (!state.isGameOver()) {
                 CardDeck drawDeck = decks.get(id - 1);
-                CardDeck discardDeck
-                        = decks.get(id % numberOfPlayers);
+                CardDeck discardDeck = decks.get(id % numberOfPlayers);
 
-                // To make both decks locked in the ID order to avoid deadlock
-                CardDeck firstLock = drawDeck.getId()
-                        < discardDeck.getId()
-                        ? drawDeck : discardDeck;
+                // Wait for card without holding each deck lock
+                try {
+                    if (!state.awaitCard(drawDeck)) {
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
 
-                CardDeck secondLock = firstLock == drawDeck
-                        ? discardDeck : drawDeck;
+                // Only one player should make a full turn at a time
+                // Waiting will happen out the synchronized block
+                synchronized (state) {
+                    if (state.isGameOver()) {
+                        break;
+                    }
 
-                synchronized (firstLock) {
-                    synchronized (secondLock) {
+                    // Another player can use the card
+                    if (drawDeck.isEmpty()) {
+                        continue;
+                    }
 
-                        // Another play may have won while we were waiting
-                        if (state.isGameOver()) {
-                            continue;
-                        }
+                    Card drawn = drawDeck.draw();
+                    receiveCard(drawn);
 
-                        Card drawn = drawDeck.draw();
+                    Card discarded = discardedNonPreferred();
+                    discardDeck.add(discarded);
 
-                        synchronized (this) {
-                            hand.add(drawn);
-                        }
+                    output.println("player " + id + " draws a "
+                            + drawn.getValue() + " from deck "
+                            + drawDeck.getId());
 
-                        Card discarded = discardedNonPreferred();
-                        discardDeck.add(discarded);
+                    output.println("player " + id + " discards a "
+                            + discarded.getValue() + " to deck "
+                            + discardDeck.getId());
 
-                        output.println(
-                                "player " + id + " draws a "
-                                + drawn.getValue() + " from deck "
-                                + drawDeck.getId()
-                        );
+                    output.println("player " + id + " current hand is "
+                            + handAsString());
 
-                        output.println(
-                                "player " + id + " current hand is "
-                                + handAsString()
-                        );
+                    // A finished turn can make a card available to a different player
+                    state.signalChange();
 
-                        if (hasWinningHand()
-                                && state.declareWinner(id)) {
-                            output.println("player " + id + " wins");
-                            System.out.println("player " + id + " wins");
-                            declaredWinner = true;
-                        }
+                    if (hasWinningHand() && state.declareWinner(id)) {
+                        output.println("player " + id + " wins");
+                        System.out.println("player " + id + " wins");
+                        declaredWinner = true;
+
+                        // Players waiting on empty decks can be made to exit
+                        state.signalChange();
                     }
                 }
             }
@@ -213,8 +211,7 @@ public class Player extends Thread {
                 output.println("player " + id + " leaves");
                 output.println(
                         "player " + id + " final hand: "
-                        + handAsString()
-                );
+                                + handAsString());
             } else {
                 finishGame(output);
             }
@@ -225,8 +222,9 @@ public class Player extends Thread {
             );
         }
     }
-
+    
     private void finishGame(PrintWriter output) {
+    
         int winner = state.getWinner();
 
         if (winner == id) {
@@ -234,18 +232,14 @@ public class Player extends Thread {
             System.out.println("player " + id + " wins");
             output.println("player " + id + " leaves");
             output.println(
-                    "player " + id + " final hand: " + handAsString()
-            );
+                    "player " + id + " final hand: " + handAsString());
         } else {
             output.println(
                     "player " + winner + " has told player " + id
-                    + " that player " + winner + " has won"
-            );
+                            + " that player " + winner + " has won");
             output.println("player " + id + " leaves");
             output.println(
-                    "player " + id + " final hand: " + handAsString()
-            );
-
+                    "player " + id + " final hand: " + handAsString());
         }
     }
 }
