@@ -45,6 +45,14 @@ public class CardGame {
             decks.get(deckIndex).add(pack.get(index + i));
         }
 
+        // Temp debug check: should show 4 cards per deck for n = 2
+         for (CardDeck deck : decks) {
+            System.out.println(
+                "DEBUG before threads: deck " + deck.getId()
+                + " = " + deck.snapshot()
+            );
+        }
+
         // Check for immediate winner
         int immediateWinner = findImmediateWinner(hands);
         if (immediateWinner != -1) {
