@@ -22,4 +22,17 @@ public class GameState {
         }
         return winner.compareAndSet(0, playerId);
     }
+
+    public synchronized boolean awaitCard(CardDeck deck)
+            throws InterruptedException {
+        while (!isGameOver() && deck.isEmpty()) {
+            wait();
+        }
+
+        return !isGameOver();
+    }
+
+    public synchronized void signalChange() {
+        notifyAll();
+    }
 }
