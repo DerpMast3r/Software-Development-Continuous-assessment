@@ -46,6 +46,7 @@ For n players, the pack should contain 8n cards exactly, with only one non-negat
 Example:
 
 ```Enter number of players: 2```
+
 ```Enter path to input pack file: normalpack.txt```
 
 ## Game Rules
