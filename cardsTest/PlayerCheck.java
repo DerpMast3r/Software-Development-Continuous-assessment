@@ -16,6 +16,9 @@ public class PlayerCheck {
 
         System.out.println("Player ID: " + player1.getPlayerId());
         System.out.println(
+            "The preferred value: " + player1.getPreferredValue()
+        );
+        System.out.println(
             "The initial hand: " + player1.getHandSnapshot()
         );
 
@@ -30,8 +33,8 @@ public class PlayerCheck {
             "Has won: " + player1.hasWinningHand()
         );
 
-        // discards the least-common card
-        Card discarded = player1.discardLeastCommon();
+        // Discarding the non-preferred card
+        Card discarded = player1.discardNonPreferred();
 
         System.out.println("Discarded: " + discarded);
         System.out.println(

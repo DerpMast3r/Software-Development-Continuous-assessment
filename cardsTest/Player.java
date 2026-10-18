@@ -2,14 +2,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 public class Player extends Thread {
 
     private final int id;
+    private final int preferredValue;
     private final List<Card> hand;
+    private final Random random = new Random();
 
     private final int numberOfPlayers;
     private final List<CardDeck> decks;
@@ -27,6 +28,7 @@ public class Player extends Thread {
         }
 
         this.id = id;
+        this.preferredValue = id;
         this.hand = new ArrayList<>(initialHand);
 
         this.numberOfPlayers = 0;
@@ -50,6 +52,7 @@ public class Player extends Thread {
         }
 
         this.id = id;
+        this.preferredValue = id;
         this.hand = new ArrayList<>(initialHand);
 
         this.numberOfPlayers = numberOfPlayers;
@@ -59,6 +62,10 @@ public class Player extends Thread {
 
     public int getPlayerId() {
         return id;
+    }
+
+    public int getPreferredValue() {
+        return preferredValue;
     }
 
     public synchronized List<Card> getHandSnapshot() {
@@ -88,29 +95,24 @@ public class Player extends Thread {
     }
 
     /**
-     * Discards the card whose value occurs least often in the hand.
-     * If several values tie for "least often", the first such card
-     * (scanning from the front of the hand) is removed.
+     * Randomly discards one card whose value is not this player's
+     * preferred denomination.
      */
-    public synchronized Card discardLeastCommon() {
-        Map<Integer, Integer> freq = new HashMap<>();
-        for (Card c : hand) {
-            freq.merge(c.getValue(), 1, Integer::sum);
-        }
-
-        int minCount = Integer.MAX_VALUE;
-        for (int count : freq.values()) {
-            if (count < minCount) {
-                minCount = count;
-            }
-        }
-
+    public synchronized Card discardNonPreferred() {
+        List<Integer> candidates = new ArrayList<>();
         for (int i = 0; i < hand.size(); i++) {
-            if (freq.get(hand.get(i).getValue()) == minCount) {
-                return hand.remove(i);
+            if (hand.get(i).getValue() != preferredValue) {
+                candidates.add(i);
             }
         }
-        throw new IllegalStateException("Hand is empty");
+
+        if (candidates.isEmpty()) {
+            throw new IllegalStateException(
+                "No non-preferred card is available to discard"
+            );
+        }
+
+        return hand.remove(candidates.get(random.nextInt(candidates.size())));
     }
 
     private synchronized String handAsString() {
@@ -160,9 +162,8 @@ public class Player extends Thread {
                 }
 
                 // Acquire deck locks in ascending deck-id order to prevent
-                // deadlock when two players share adjacent decks.
-                // the per-deck locking below lets non-adjacent
-                // players act concurrently.
+                // deadlock when two players share adjacent decks; the
+                // per-deck locking lets non-adjacent players act concurrently
                 CardDeck first =
                         drawDeck.getId() <= discardDeck.getId() ? drawDeck : discardDeck;
                 CardDeck second =
@@ -177,8 +178,6 @@ public class Player extends Thread {
                         }
 
                         // Another player can use the card
-                        // (i.e. another thread may have drained the deck
-                        // between awaitCard returning and us taking the lock)
                         if (drawDeck.isEmpty()) {
                             continue;
                         }
@@ -186,7 +185,7 @@ public class Player extends Thread {
                         Card drawn = drawDeck.draw();
                         receiveCard(drawn);
 
-                        Card discarded = discardLeastCommon();
+                        Card discarded = discardNonPreferred();
                         discardDeck.add(discarded);
 
                         output.println("player " + id + " draws a "
