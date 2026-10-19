@@ -90,7 +90,21 @@ To be completed following final testing. In particular, termination for card dis
 
 ## Automated Testing
 
-To be completed with final test framework, JUnit version and instructions for running tests
+Two test suites are provided:
+
+Plain-Java suites (no external dependencies):
+* java CardDeckCheck
+* java GameStateCheck
+* java CardGameCheck
+* java PlayerCheck
+
+These run on any JDK 11+ and require no third-party libraries.
+
+JUnit 5 suites (requires junit-platform-console-standalone.jar):
+    java -jar junit-platform-console-standalone.jar --class-path . --scan-class-path
+
+Or run a specific class:
+    java -jar junit-platform-console-standalone.jar --class-path . --select-class GameStateJUnitTest
 
 ## Building and Running the JAR
 
