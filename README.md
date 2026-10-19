@@ -92,7 +92,7 @@ The following manual tests have been performed:
 * Player and deck output generation - Passed for the tested scenarios
 * Invalid-input handling for missing file, wrong row count, non-integer row, and negative integer - Passed
 
-
+Java Tests:
 
 java CardGameCheck    - 3 end-to-end tests:
 * n=4 immediate win (player 1 dealt four 1s)
@@ -115,8 +115,10 @@ java GameStateCheck - 7 tests:
 * awaitCard unblocks with false when the game ends
 * multiple waiters all unblock on a single signalChange (notifyAll)
 
-PlayerCheck.java:
+PlayerCheck.java - 1 test:
 * Demonstrates player's non-threaded API
+
+Junit Tests:
 
 CardDeckJUnitTest - 5 tests:
 * FIFO order
