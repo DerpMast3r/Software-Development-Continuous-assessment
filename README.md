@@ -17,11 +17,12 @@ Players will draw cards from the decks designated to them and have cards discard
 ## Project Files
 
 Production classes:
-* Card.java - Represents an individual card.
-* CardDeck.java - Manages a deck of cards, which includes things like drawing and adding cards.
-* CardGame.java - This handles the game setup, validation of inputs, dealing, thread execution and final output of deck.
-* GameState.java - Will monitor the winning player and coordinate thread activity.
-* Player.java - Implements the player behaviour, management of hands, drawing, discarding and output logging.
+* Card.java - Represents an individual card and its denomination.
+* CardDeck.java - Manages cards in FIFO order using an ```ArrayDeque```.
+* CardGame.java - This handles the game setup, validation of inputs, distribution and thread execution.
+* GameState.java - Maintains the winning player's ID using an ```Atomicinteger```.
+* Player.java - Implements the player behaviour, drawing, discarding, winning-hand checks and logging.
+* cards.jar - Executable game archive
 
 
 Test classes:
@@ -134,9 +135,9 @@ GameStateJUnitTest - 3 tests:
 
 ## Known Limitations
 
-By design, a game will not terminate if the given pack does not contain any sequence of draws leading to a four-of-a-kind for any player. The program continues cycling cards rather than crashing; this is the intended behaviour when no winning hand is achievable from the pack.
+By design, a game will not terminate if the given pack does not contain any sequence of draws leading to a four-of-a-kind for any player. The program continues cycling cards rather than crashing; this is the intended behaviour when no winning hand is achievable from the pack. Player execution order could vary due to thread scheduling, and players accessing shared decks can experience lock contention. 
 
-The current design ensures at most one winner via the atomic compareAndSet in GameState.declareWinner. Simultaneous winner declarations are not additionally handled — so exactly one player is declared the winner and the others exit.
+Automated tests cover only selected behaviours instead of all possible execution paths. The current design ensures at most one winner via the atomic compareAndSet in GameState.declareWinner. Simultaneous winner declarations are not additionally handled — so exactly one player is declared the winner and the others exit.
 
 ## Automated Testing
 
