@@ -10,7 +10,7 @@ Players will draw cards from the decks designated to them and have cards discard
 
 ## Requirements
 
-* Java Development Kit (JDK) 11 or later.
+* Java Development Kit (JDK) 11 or later. (The supplied JAR was built using Java 25).
 * A terminal or command prompt.
 * Valid text files containing card packs.
 
