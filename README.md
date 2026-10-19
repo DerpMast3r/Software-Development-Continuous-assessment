@@ -29,8 +29,8 @@ Test classes:
 * CardGameCheck.java - End-to-end tests for CardGame
 * GameStateCheck.java - Behavioural, invariant, boundary and failure tests for GameState (7 tests).
 * CardDeckCheck.java - Behavioural, invariant and failure tests for CardDeck (5 tests).
-* CardDeckJUnitTest.java - JUnit equivalents of the CardDeck checks:
-* GameStateJUnitTest.java - JUnit equivalents of the GameState checks:
+* CardDeckJUnitTest.java - JUnit equivalents of the CardDeck checks
+* GameStateJUnitTest.java - JUnit equivalents of the GameState checks
 
 ## Compiling of Program
 
