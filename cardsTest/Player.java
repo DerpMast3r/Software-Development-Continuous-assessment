@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+
+
 public class Player extends Thread {
 
     private final int id;
@@ -112,7 +114,8 @@ public class Player extends Thread {
             );
         }
 
-        return hand.remove(candidates.get(random.nextInt(candidates.size())));
+        int pick = candidates.get(random.nextInt(candidates.size()));
+        return hand.remove(pick);
     }
 
     private synchronized String handAsString() {
