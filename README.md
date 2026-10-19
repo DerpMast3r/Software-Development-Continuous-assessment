@@ -101,11 +101,27 @@ Plain-Java suites (no external dependencies):
 These run on any JDK 11+ and require no third-party libraries.
 
 JUnit 5 suites (requires junit-platform-console-standalone.jar):
-    java -jar junit-platform-console-standalone.jar --class-path . --scan-class-path
+    ```java -jar junit-platform-console-standalone.jar --class-path . --scan-class-path```
 
 Or run a specific class:
-    java -jar junit-platform-console-standalone.jar --class-path . --select-class GameStateJUnitTest
+    ```java -jar junit-platform-console-standalone.jar --class-path . --select-class GameStateJUnitTest```
 
 ## Building and Running the JAR
+The executable JAR is named cards.jar. It contains the nine .class files, nine .java source files, and a manifest with Main-Class: CardGame (Does not include JUnit tests).
 
-To be completed after the executable JAR has been built and verified
+From the project directory:
+
+```javac *.java```
+```jar --create --file cards.jar --main-class CardGame *.class *.java```
+
+Verify the JAR:
+
+```java -m jdk.jartool/sun.tools.jar.Main --list --file cards.jar```
+```java -jar cards.jar```
+
+Running from the JAR:
+
+```java -jar cards.jar```
+
+The prompts and behaviour are identical to java CardGame.
+
