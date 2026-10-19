@@ -82,26 +82,27 @@ The following manual tests have been performed:
 * Three-player normal gameplay - Passed
 * Player and deck output generation - Passed for the tested scenarios
 * Invalid-input handling for missing file, wrong row count, non-integer row, and negative integer - Passed
-java CardDeckCheck    - 5 tests:
-        * FIFO order
-        * snapshot is an independent copy
-        * draw on empty deck throws IllegalStateException
-        * concurrent add/draw (10 threads x 1000 operations each)
-        * producer wakes a blocked consumer via awaitCard/signalChange
 
-java GameStateCheck   - 7 tests:
-        * initial state (not game over, winner 0)
-        * single declareWinner (first true, second false, winner preserved)
-        * 10-thread concurrent declareWinner (exactly one winner)
-        * awaitCard fast paths (game over / live game, empty / non-empty deck)
-        * awaitCard blocks then unblocks on card arrival
-        * awaitCard unblocks with false when the game ends
-        * multiple waiters all unblock on a single signalChange (notifyAll)
+* java CardDeckCheck    - 5 tests:
+* FIFO order
+* snapshot is an independent copy
+* draw on empty deck throws IllegalStateException
+* concurrent add/draw (10 threads x 1000 operations each)
+* producer wakes a blocked consumer via awaitCard/signalChange
 
-java CardGameCheck    - 3 end-to-end tests:
-        * n=4 immediate win (player 1 dealt four 1s)
-        * n=4 mid-game win on turn 1
-        * n=1 boundary (reentrant deck lock, three-turn win)
+* java GameStateCheck   - 7 tests:
+* initial state (not game over, winner 0)
+* single declareWinner (first true, second false, winner preserved)
+* 10-thread concurrent declareWinner (exactly one winner)
+* awaitCard fast paths (game over / live game, empty / non-empty deck)
+* awaitCard blocks then unblocks on card arrival
+* awaitCard unblocks with false when the game ends
+* multiple waiters all unblock on a single signalChange (notifyAll)
+
+* java CardGameCheck    - 3 end-to-end tests:
+* n=4 immediate win (player 1 dealt four 1s)
+* n=4 mid-game win on turn 1
+* n=1 boundary (reentrant deck lock, three-turn win)
 
 ## Known Limitations
 
