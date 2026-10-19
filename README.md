@@ -16,6 +16,7 @@ Players will draw cards from the decks designated to them and have cards discard
 
 ## Project Files
 
+Production classes:
 * Card.java - Represents an individual card.
 * CardDeck.java - Manages a deck of cards, which includes things like drawing and adding cards.
 * CardGame.java - This handles the game setup, validation of inputs, dealing, thread execution and final output of deck.
