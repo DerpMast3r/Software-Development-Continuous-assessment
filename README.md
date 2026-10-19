@@ -21,7 +21,15 @@ Players will draw cards from the decks designated to them and have cards discard
 * CardGame.java - This handles the game setup, validation of inputs, dealing, thread execution and final output of deck.
 * GameState.java - Will monitor the winning player and coordinate thread activity.
 * Player.java - Implements the player behaviour, management of hands, drawing, discarding and output logging.
+
+
+Test classes:
 * PlayerCheck.java - This contains the basic checks for player behaviour.
+* CardGameCheck.java - End-to-end tests for CardGame
+* GameStateCheck.java - Behavioural, invariant, boundary and failure tests for GameState (7 tests).
+* CardDeckCheck.java - Behavioural, invariant and failure tests for CardDeck (5 tests).
+* CardDeckJUnitTest.java - JUnit equivalents of the CardDeck checks:
+* GameStateJUnitTest.java - JUnit equivalents of the GameState checks:
 
 ## Compiling of Program
 
