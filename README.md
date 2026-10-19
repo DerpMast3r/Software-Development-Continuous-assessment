@@ -92,14 +92,21 @@ The following manual tests have been performed:
 * Player and deck output generation - Passed for the tested scenarios
 * Invalid-input handling for missing file, wrong row count, non-integer row, and negative integer - Passed
 
-java CardDeckCheck    - 5 tests:
+
+
+java CardGameCheck    - 3 end-to-end tests:
+* n=4 immediate win (player 1 dealt four 1s)
+* n=4 mid-game win on turn 1
+* n=1 boundary (reentrant deck lock, three-turn win)
+
+java CardDeckCheck - 5 tests:
 * FIFO order
 * snapshot is an independent copy
 * draw on empty deck throws IllegalStateException
 * concurrent add/draw (10 threads x 1000 operations each)
 * producer wakes a blocked consumer via awaitCard/signalChange
 
-java GameStateCheck   - 7 tests:
+java GameStateCheck - 7 tests:
 * initial state (not game over, winner 0)
 * single declareWinner (first true, second false, winner preserved)
 * 10-thread concurrent declareWinner (exactly one winner)
@@ -108,10 +115,20 @@ java GameStateCheck   - 7 tests:
 * awaitCard unblocks with false when the game ends
 * multiple waiters all unblock on a single signalChange (notifyAll)
 
-java CardGameCheck    - 3 end-to-end tests:
-* n=4 immediate win (player 1 dealt four 1s)
-* n=4 mid-game win on turn 1
-* n=1 boundary (reentrant deck lock, three-turn win)
+PlayerCheck.java:
+* Demonstrates player's non-threaded API
+
+CardDeckJUnitTest - 5 tests:
+* FIFO order
+* single-card deck
+* duplicate card values
+* empty-deck draw throws IllegalStateException
+* draw after the deck has become empty
+
+GameStateJUnitTest - 3 tests:
+* initial state (no winner, not game over)
+* single declareWinner (first true, second false, winner preserved)
+* two-thread concurrent declareWinner (exactly one succeeds)
 
 ## Known Limitations
 
@@ -136,6 +153,9 @@ JUnit 5 suites (requires junit-platform-console-standalone.jar):
 
 Or run a specific class:
     ```java -jar junit-platform-console-standalone.jar --class-path . --select-class GameStateJUnitTest```
+
+* java CardDeckJUnitTest
+* java GameStateJUnitTest
 
 ## Building and Running the JAR
 The executable JAR is named cards.jar. It contains the nine .class files, nine .java source files, and a manifest with Main-Class: CardGame (Does not include JUnit tests).
