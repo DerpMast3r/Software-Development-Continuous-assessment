@@ -107,6 +107,7 @@ java CardGameCheck    - 3 end-to-end tests:
 ## Known Limitations
 
 By design, a game will not terminate if the given pack does not contain any sequence of draws leading to a four-of-a-kind for any player. The program continues cycling cards rather than crashing; this is the intended behaviour when no winning hand is achievable from the pack.
+
 The current design ensures at most one winner via the atomic compareAndSet in GameState.declareWinner. Simultaneous winner declarations are not additionally handled — so exactly one player is declared the winner and the others exit.
 
 ## Automated Testing
